@@ -1,0 +1,119 @@
+---
+# tasks file for apache
+
+- name: Add ondrej apt key
+  apt_key:
+    keyserver: 'keyserver.ubuntu.com'
+    id: '14AA40EC0831756756D7F66C4F4EA0AAE5267A6C'
+    state: 'present'
+  tags:
+    - apache
+
+- name: Install ondrej repo for latest Apache packages
+  apt_repository:
+    repo: '{{ item }}'
+  with_items:
+    - 'deb http://ppa.launchpad.net/ondrej/apache2/ubuntu {{ ansible_lsb.codename }} main'
+    - 'deb-src http://ppa.launchpad.net/ondrej/apache2/ubuntu {{ ansible_lsb.codename }} main'
+  tags:
+    - apache
+
+- name: Install apache packages
+  apt:
+    name: 'apache2'
+    state: 'present'
+    update_cache: 'yes'
+  tags:
+    - apache
+
+- name: Set apache envvars
+  template:
+    src: 'envvars.j2'
+    dest: '/etc/apache2/envvars'
+  notify: restart apache
+  tags:
+    - apache
+
+- name: Set apache ports
+  template:
+    src: 'ports.conf.j2'
+    dest: '/etc/apache2/ports.conf'
+  notify: restart apache
+  tags:
+    - apache
+
+- name: Configure apache
+  template:
+    src: 'apache2.conf.j2'
+    dest: '/etc/apache2/apache2.conf'
+  notify: restart apache
+  tags:
+    - apache
+
+- name: Enable apache modules
+  apache2_module:
+    name: '{{ item }}'
+    state: 'present'
+  with_items: '{{ apache_mods_enabled }}'
+  notify: restart apache
+  tags:
+    - apache
+
+- name: Disable apache modules
+  apache2_module:
+    name: '{{ item }}'
+    state: 'absent'
+  with_items: '{{ apache_mods_disabled }}'
+  notify: restart apache
+  tags:
+    - apache
+
+- name: Enable custom configurations
+  template:
+    src: '{{ item.template }}'
+    dest: '/etc/apache2/conf-enabled/{{ item.conf_name }}.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  with_items: '{{ apache_confs_enabled }}'
+  notify: restart apache
+  tags:
+    - apache
+
+- name: Disable custom configurations
+  file:
+    path: '/etc/apache2/conf-enabled/{{ item.conf_name }}.conf'
+    state: 'absent'
+  with_items: '{{ apache_confs_disabled }}'
+  notify: restart apache
+  tags:
+    - apache
+
+- name: Enable sites
+  template:
+    src: '{{ item.template }}'
+    dest: '/etc/apache2/sites-enabled/{{ item.server_name }}.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  with_items: '{{ apache_sites_enabled }}'
+  notify: reload apache
+  tags:
+    - apache
+
+- name: Disable sites
+  file:
+    path: '/etc/apache2/sites-enabled/{{ item }}.conf'
+    state: 'absent'
+  with_items: '{{ apache_sites_disabled }}'
+  notify: reload apache
+  tags:
+    - apache
+
+- name: Ensure apache is started and enabled on boot
+  service:
+    name: 'apache2'
+    state: 'started'
+    enabled: 'yes'
+  tags:
+    - apache

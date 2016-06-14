@@ -1,0 +1,36 @@
+---
+# defaults file for apache
+
+# Envvars configuration
+apache_user: 'www-data'
+
+# Ports configuration
+apache_listen_port: '80'
+
+# Main configuration
+apache_timeout: '300'
+apache_enable_keepalive: True
+apache_maxkeepaliverequests: '100'
+apache_keepalivetimeout: '5'
+apache_enable_hostnamelookups: False
+apache_loglevel: 'warn'
+apache_docroot: '/var/www'
+
+# Modules management
+apache_mods_disabled: []
+apache_mods_enabled: []
+
+# Conf management
+apache_confs_disabled: []
+# Format :
+#   - template  : Path to template with conf content
+#     conf_name : /etc/apache2/conf-enabled/{{ conf_name }}.conf
+apache_confs_enabled: []
+
+# Sites management
+apache_sites_disabled:
+  - 000-default
+# Format :
+#   - template    : Path to template with site content
+#     server_name : /etc/apache2/sites-enabled/{{ server_name }}.conf
+apache_sites_enabled: []
