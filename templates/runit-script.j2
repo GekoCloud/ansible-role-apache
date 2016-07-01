@@ -2,8 +2,9 @@
 
 export APACHE_CONF_DIR=/etc/apache2
 
+# Activate the Ubuntu Apache environment
 . ${APACHE_CONF_DIR}/envvars
 
 exec 2>&1
 exec \
-/usr/sbin/apache2 -f ${APACHE_CONF_DIR}/apache2.conf -D NO_DAEMONIZE
+/usr/sbin/apache2 -k start -DNO_DETACH
