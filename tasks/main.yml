@@ -18,11 +18,32 @@
   tags:
     - apache
 
-- name: Install apache packages
+- name: Prevent apache to start on install
+  copy:
+    content: |-
+      #!/bin/sh
+      exit 101
+    dest: '/usr/sbin/policy-rc.d'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  changed_when: False
+  tags:
+    - apache
+
+- name: Install apache package
   apt:
     name: 'apache2'
     state: 'present'
     update_cache: 'yes'
+  tags:
+    - apache
+
+- name: Remove policy-rc.d
+  file:
+    name: '/usr/sbin/policy-rc.d'
+    state: 'absent'
+  changed_when: False
   tags:
     - apache
 
@@ -110,10 +131,36 @@
   tags:
     - apache
 
-- name: Ensure apache is started and enabled on boot
+- name: Ensure /run/apache2 dir exists
+  file:
+    path: '/run/apache2'
+    state: 'directory'
+    mode: '0755'
+  tags:
+    - apache
+
+- name: Ensure apache is started and enabled at boot
   service:
     name: 'apache2'
     state: 'started'
     enabled: 'yes'
+  when: apache_init_system == 'upstart'
+  tags:
+    - apache
+
+- name: Create runit dir
+  file:
+    state: 'directory'
+    path: '/etc/service/apache2'
+  when: apache_init_system == 'runit'
+  tags:
+    - apache
+
+- name: Create runit script
+  template:
+    src: 'runit-script.j2'
+    dest: '/etc/service/apache2/run'
+    mode: '0755'
+  when: apache_init_system == 'runit'
   tags:
     - apache

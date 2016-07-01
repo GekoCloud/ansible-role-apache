@@ -6,6 +6,7 @@ This role installs and configures apache using [ondrej repo](https://launchpad.n
 Role Variables
 --------------
 
+- `apache_init_system`: OS init system. Docker phusion/baseimage uses 'runit'. (default 'upstart')
 - `apache_user`: User apache will run as (default: 'www-data')
 - `apache_group`: Group apache will run as (default: apache_user)
 - `apache_listen_port`: Port apache will listen (default: '80')

@@ -8,5 +8,6 @@
   roles:
     - {
       role: ansible-role-apache,
-      apache_mods_enabled: '{{ mods_enabled }}'
+      apache_mods_enabled: '{{ mods_enabled }}',
+      apache_init_system: 'runit'
     }

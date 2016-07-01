@@ -1,6 +1,8 @@
 ---
 # defaults file for apache
 
+apache_init_system: 'upstart'
+
 # Envvars configuration
 apache_user: 'www-data'
 
