@@ -18,6 +18,13 @@
   tags:
     - apache
 
+- name: Update apt packages
+  apt:
+    update_cache: 'yes'
+    cache_valid_time: '3600'
+  tags:
+    - apache
+
 - name: Prevent apache to start on install
   copy:
     content: |-
@@ -35,7 +42,6 @@
   apt:
     name: 'apache2'
     state: 'present'
-    update_cache: 'yes'
   tags:
     - apache
 
