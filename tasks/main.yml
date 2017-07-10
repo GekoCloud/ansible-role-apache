@@ -6,6 +6,6 @@
     - 'requirements'
     - 'install'
     - 'configure'
-    - '{{ mysql_init_system }}'
+    - '{{ apache_init_system }}'
   tags:
     - apache
