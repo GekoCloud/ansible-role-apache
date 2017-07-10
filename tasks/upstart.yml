@@ -1,0 +1,5 @@
+- name: Ensure apache is started and enabled at boot
+  service:
+    name: 'apache'
+    state: 'started'
+    enabled: True

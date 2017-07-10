@@ -1,0 +1,65 @@
+- name: Set apache envvars
+  template:
+    src: 'envvars.j2'
+    dest: '/etc/apache2/envvars'
+  notify: restart apache
+
+- name: Set apache ports
+  template:
+    src: 'ports.conf.j2'
+    dest: '/etc/apache2/ports.conf'
+  notify: restart apache
+
+- name: Set apache config
+  template:
+    src: 'apache2.conf.j2'
+    dest: '/etc/apache2/apache2.conf'
+  notify: restart apache
+
+- name: Enable apache modules
+  apache2_module:
+    name: '{{ item }}'
+    state: 'present'
+  with_items: '{{ apache_mods_enabled }}'
+  notify: restart apache
+
+- name: Disable apache modules
+  apache2_module:
+    name: '{{ item }}'
+    state: 'absent'
+  with_items: '{{ apache_mods_disabled }}'
+  notify: restart apache
+
+- name: Enable custom configurations
+  template:
+    src: '{{ item.template }}'
+    dest: '/etc/apache2/conf-enabled/{{ item.conf_name }}.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  with_items: '{{ apache_confs_enabled }}'
+  notify: restart apache
+
+- name: Disable custom configurations
+  file:
+    path: '/etc/apache2/conf-enabled/{{ item.conf_name }}.conf'
+    state: 'absent'
+  with_items: '{{ apache_confs_disabled }}'
+  notify: restart apache
+
+- name: Enable sites
+  template:
+    src: '{{ item.template }}'
+    dest: '/etc/apache2/sites-enabled/{{ item.server_name }}.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  with_items: '{{ apache_sites_enabled }}'
+  notify: reload apache
+
+- name: Disable sites
+  file:
+    path: '/etc/apache2/sites-enabled/{{ item }}.conf'
+    state: 'absent'
+  with_items: '{{ apache_sites_disabled }}'
+  notify: reload apache
