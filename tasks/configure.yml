@@ -18,48 +18,60 @@
 
 - name: Enable apache modules
   apache2_module:
-    name: '{{ item }}'
+    name: '{{ apache_mods_enabled_loop }}'
     state: 'present'
   with_items: '{{ apache_mods_enabled }}'
+  loop_control:
+    loop_var: apache_mods_enabled_loop
   notify: restart apache
 
 - name: Disable apache modules
   apache2_module:
-    name: '{{ item }}'
+    name: '{{ apache_mods_disabled_loop }}'
     state: 'absent'
   with_items: '{{ apache_mods_disabled }}'
+  loop_control:
+    loop_var: apache_mods_disabled_loop
   notify: restart apache
 
 - name: Enable custom configurations
   template:
-    src: '{{ item.template }}'
-    dest: '/etc/apache2/conf-enabled/{{ item.conf_name }}.conf'
+    src: '{{ apache_confs_enabled_loop.template }}'
+    dest: '/etc/apache2/conf-enabled/{{ apache_confs_enabled_loop.conf_name }}.conf'
     owner: 'root'
     group: 'root'
     mode: '0644'
   with_items: '{{ apache_confs_enabled }}'
+  loop_control:
+    loop_var: apache_confs_enabled_loop
   notify: restart apache
 
 - name: Disable custom configurations
   file:
-    path: '/etc/apache2/conf-enabled/{{ item.conf_name }}.conf'
+    path: '/etc/apache2/conf-enabled/{{ apache_confs_disabled_loop.conf_name }}.conf'
     state: 'absent'
   with_items: '{{ apache_confs_disabled }}'
+  loop_control:
+    loop_var: apache_confs_disabled_loop
   notify: restart apache
 
 - name: Enable sites
   template:
-    src: '{{ item.template }}'
-    dest: '/etc/apache2/sites-enabled/{{ item.server_name }}.conf'
+    src: '{{ apache_sites_enabled_loop.template }}'
+    dest: '/etc/apache2/sites-enabled/{{ apache_sites_enabled_loop.server_name }}.conf'
     owner: 'root'
     group: 'root'
     mode: '0644'
   with_items: '{{ apache_sites_enabled }}'
+  loop_control:
+    loop_var: apache_sites_enabled_loop
   notify: reload apache
 
 - name: Disable sites
   file:
-    path: '/etc/apache2/sites-enabled/{{ item }}.conf'
+    path: '/etc/apache2/sites-enabled/{{ apache_sites_disabled_loop }}.conf'
     state: 'absent'
   with_items: '{{ apache_sites_disabled }}'
+  loop_control:
+    loop_var: apache_sites_disabled_loop
   notify: reload apache

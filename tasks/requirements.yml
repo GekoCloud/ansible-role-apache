@@ -6,8 +6,10 @@
 
 - name: Install ondrej repo for latest Apache packages
   apt_repository:
-    repo: '{{ item }}'
+    repo: '{{ apache_ondrej_repo_loop }}'
     update_cache: 'yes'
   with_items:
     - 'deb http://ppa.launchpad.net/ondrej/apache2/ubuntu {{ ansible_lsb.codename }} main'
     - 'deb-src http://ppa.launchpad.net/ondrej/apache2/ubuntu {{ ansible_lsb.codename }} main'
+  loop_control:
+    loop_var: apache_ondrej_repo_loop
