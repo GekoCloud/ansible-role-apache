@@ -46,9 +46,21 @@ AccessFileName .htaccess
     Require all granted
 </Directory>
 
+<Directory /srv/www>
+    Options +Indexes +FollowSymLinks +ExecCGI
+    AllowOverride All
+    Order deny,allow
+    Allow from all
+    Require all granted
+</Directory>
+
 # Includes
 IncludeOptional mods-enabled/*.load
 IncludeOptional mods-enabled/*.conf
 Include ports.conf
 IncludeOptional conf-enabled/*.conf
 IncludeOptional sites-enabled/*.conf
+
+<IfModule mod_setenvif.c>
+  SetEnvIf X-Forwarded-Proto "^https$" HTTPS
+</IfModule>
