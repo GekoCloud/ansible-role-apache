@@ -16,7 +16,7 @@ apache_maxkeepaliverequests: '100'
 apache_keepalivetimeout: '5'
 apache_enable_hostnamelookups: False
 apache_loglevel: 'warn'
-apache_docroot: '/var/www'
+apache_docroot: '/srv/www'
 
 # Modules management
 apache_mods_disabled: []

@@ -41,12 +41,6 @@ AccessFileName .htaccess
 </Directory>
 
 <Directory {{ apache_docroot }}>
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-</Directory>
-
-<Directory /srv/www>
     Options +Indexes +FollowSymLinks +ExecCGI
     AllowOverride All
     Order deny,allow
