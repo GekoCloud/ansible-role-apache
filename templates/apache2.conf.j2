@@ -58,3 +58,13 @@ IncludeOptional sites-enabled/*.conf
 <IfModule mod_setenvif.c>
   SetEnvIf X-Forwarded-Proto "^https$" HTTPS
 </IfModule>
+
+<IfModule mod_expires.c>
+ExpiresActive on
+
+ExpiresByType image/jpg “access plus 3 days”
+ExpiresByType image/png “access plus 3 days”
+ExpiresByType image/js “access plus 3 days”
+ExpiresByType image/jpeg “access plus 3 days”
+ExpiresByType text/css “access plus 1 days”
+</IfModule>
